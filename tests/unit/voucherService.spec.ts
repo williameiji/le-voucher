@@ -111,4 +111,25 @@ describe("Apply voucher", () => {
 			applied: false,
 		});
 	});
+
+	it("Should not apply with value less than 100", async () => {
+		const voucher = voucherFactory.createVoucher();
+		const VALUE = 90;
+
+		const isVoucherValid = jest
+			.spyOn(voucherRepository, "getVoucherByCode")
+			.mockImplementationOnce((): any => {
+				return voucher;
+			});
+
+		const result = await voucherService.applyVoucher(voucher.code, VALUE);
+
+		expect(isVoucherValid).toBeCalled();
+		expect(result).toEqual({
+			amount: VALUE,
+			discount: voucher.discount,
+			finalAmount: VALUE,
+			applied: false,
+		});
+	});
 });
