@@ -70,4 +70,23 @@ describe("Apply voucher", () => {
 			applied: true,
 		});
 	});
+
+	it("Should not apply with a non-existent voucher", () => {
+		const voucher = voucherFactory.createVoucher();
+		const VALUE = 110;
+
+		jest.spyOn(
+			voucherRepository,
+			"getVoucherByCode"
+		).mockImplementationOnce((): any => {
+			return undefined;
+		});
+
+		const error = voucherService.applyVoucher(voucher.code, VALUE);
+
+		expect(error).rejects.toEqual({
+			type: "conflict",
+			message: "Voucher does not exist.",
+		});
+	});
 });
