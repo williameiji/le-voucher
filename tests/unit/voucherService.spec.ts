@@ -45,5 +45,29 @@ describe("Create voucher", () => {
 });
 
 describe("Apply voucher", () => {
-	it("Should apply a voucher", async () => {});
+	it("Should apply a voucher", async () => {
+		const voucher = voucherFactory.createVoucher();
+		const VALUE = 110;
+
+		const isVoucherValid = jest
+			.spyOn(voucherRepository, "getVoucherByCode")
+			.mockImplementationOnce((): any => {
+				return voucher;
+			});
+
+		const changeVoucherStatus = jest
+			.spyOn(voucherRepository, "useVoucher")
+			.mockImplementationOnce((): any => {});
+
+		const result = await voucherService.applyVoucher(voucher.code, VALUE);
+
+		expect(isVoucherValid).toBeCalled();
+		expect(changeVoucherStatus).toBeCalled();
+		expect(result).toEqual({
+			amount: VALUE,
+			discount: voucher.discount,
+			finalAmount: VALUE - VALUE * (voucher.discount / 100),
+			applied: true,
+		});
+	});
 });
