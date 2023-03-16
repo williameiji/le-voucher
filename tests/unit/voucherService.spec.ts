@@ -5,7 +5,6 @@ import voucherFactory from "../factories/voucherFactory";
 describe("Create voucher", () => {
 	it("Should create a voucher", async () => {
 		const voucher = voucherFactory.createVoucher();
-		const DISCOUNT = 10;
 
 		jest.spyOn(
 			voucherRepository,
@@ -18,14 +17,13 @@ describe("Create voucher", () => {
 			.spyOn(voucherRepository, "createVoucher")
 			.mockImplementationOnce((): any => {});
 
-		await voucherService.createVoucher(voucher, DISCOUNT);
+		await voucherService.createVoucher(voucher.code, voucher.discount);
 
 		expect(result).toBeCalled();
 	});
 
 	it("Should not create a voucher", async () => {
 		const voucher = voucherFactory.createVoucher();
-		const DISCOUNT = 10;
 
 		jest.spyOn(
 			voucherRepository,
@@ -34,11 +32,18 @@ describe("Create voucher", () => {
 			return voucher;
 		});
 
-		const error = voucherService.createVoucher(voucher, DISCOUNT);
+		const error = voucherService.createVoucher(
+			voucher.code,
+			voucher.discount
+		);
 
 		expect(error).rejects.toEqual({
 			type: "conflict",
 			message: "Voucher already exist.",
 		});
 	});
+});
+
+describe("Apply voucher", () => {
+	it("Should apply a voucher", async () => {});
 });
