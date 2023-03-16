@@ -89,4 +89,26 @@ describe("Apply voucher", () => {
 			message: "Voucher does not exist.",
 		});
 	});
+
+	it("Should not apply a used voucher", async () => {
+		const voucher = voucherFactory.createVoucher();
+		voucher.used = true;
+		const VALUE = 110;
+
+		const isVoucherValid = jest
+			.spyOn(voucherRepository, "getVoucherByCode")
+			.mockImplementationOnce((): any => {
+				return voucher;
+			});
+
+		const result = await voucherService.applyVoucher(voucher.code, VALUE);
+
+		expect(isVoucherValid).toBeCalled();
+		expect(result).toEqual({
+			amount: VALUE,
+			discount: voucher.discount,
+			finalAmount: VALUE,
+			applied: false,
+		});
+	});
 });
