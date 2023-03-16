@@ -22,4 +22,23 @@ describe("Create voucher", () => {
 
 		expect(result).toBeCalled();
 	});
+
+	it("Should not create a voucher", async () => {
+		const voucher = voucherFactory.createVoucher();
+		const DISCOUNT = 10;
+
+		jest.spyOn(
+			voucherRepository,
+			"getVoucherByCode"
+		).mockImplementationOnce((): any => {
+			return voucher;
+		});
+
+		const error = voucherService.createVoucher(voucher, DISCOUNT);
+
+		expect(error).rejects.toEqual({
+			type: "conflict",
+			message: "Voucher already exist.",
+		});
+	});
 });
